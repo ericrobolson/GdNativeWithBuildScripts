@@ -3,15 +3,13 @@ use gdnative::*;
 /// The HelloWorld "class"
 #[derive(NativeClass)]
 #[inherit(Node)]
-pub struct HelloWorld;
+pub struct GameEngine;
 
-// __One__ `impl` block can have the `#[methods]` attribute, which will generate
-// code to automatically bind any exported methods to Godot.
 #[methods]
-impl HelloWorld {
+impl GameEngine {
     /// The "constructor" of the class.
     fn _init(_owner: Node) -> Self {
-        HelloWorld
+        Self
     }
 
     // To make a method known to Godot, use the #[export] attribute.
@@ -26,13 +24,13 @@ impl HelloWorld {
     fn _ready(&self, _owner: Node) {
         // The `godot_print!` macro works like `println!` but prints to the Godot-editor
         // output tab as well.
-        godot_print!("hello, world.");
+        godot_print!("hello, world. This is an engine test.");
     }
 }
 
 // Function that registers all exposed classes to Godot
 fn init(handle: gdnative::init::InitHandle) {
-    handle.add_class::<HelloWorld>();
+    handle.add_class::<GameEngine>();
 }
 
 // macros that create the entry-points of the dynamic library.

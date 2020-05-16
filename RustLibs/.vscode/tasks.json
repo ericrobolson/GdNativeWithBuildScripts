@@ -50,7 +50,7 @@
       },
       "group": "build"
     },
-{
+    {
       "label": "copy_to_godot_i686-pc-windows-msvc",
       "type": "shell",
       "command": "copy",
@@ -63,8 +63,18 @@
       },
       "problemMatcher": []
     },
-
-    // Execute all copy tasks
+     {
+      "label": "clear_existing_builds",
+      "type": "shell",
+      "command": "del",
+      "args": [        
+        "*.*"
+      ],
+      "options": {
+        "cwd": "${workspaceRoot}/../GodotClient/dlls"
+      },
+      "problemMatcher": []
+    },
     {
       "label": "copy_to_godot",
       "dependsOn": [
@@ -73,14 +83,19 @@
       ],
       "problemMatcher": []
     },
-    // Build + Copy all targets
+
     {
       "label": "build_all_targets",
       "dependsOn": [
+        "clear_existing_builds",
         "x86_64-pc-windows-msvc",
         "i686-pc-windows-msvc",
         "copy_to_godot"
-      ]
+      ],
+      "problemMatcher": [],
+      "group": "build"
+
+      
     }
   ]
 }

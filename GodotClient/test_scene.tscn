@@ -4,7 +4,7 @@
 
 [sub_resource type="NativeScript" id=1]
 resource_name = "HelloWorld"
-class_name = "HelloWorld"
+class_name = "GameEngine"
 library = ExtResource( 1 )
 
 [node name="Node2D" type="Node2D"]
