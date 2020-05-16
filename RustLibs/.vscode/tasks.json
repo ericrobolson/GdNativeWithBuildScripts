@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "windows x86_64",
+      "label": "x86_64-pc-windows-msvc",
       "type": "shell",
       "command": "cargo",
       "args": [
@@ -19,9 +19,22 @@
         "cwd": "${workspaceRoot}/cube"
       },
       "group": "build"
-    },    
-      {
-      "label": "windows i686",
+    },
+    {
+      "label": "copy_to_godot_windows-x86_64",
+      "type": "shell",
+      "command": "copy",
+      "args": [
+        "RustLibs/cube/target/x86_64-pc-windows-msvc/debug/cube.dll",
+        "GodotClient/dlls/x86_64-pc-windows-msvc.dll"
+      ],
+      "options": {
+        "cwd": "${workspaceRoot}/.."
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "i686-pc-windows-msvc",
       "type": "shell",
       "command": "cargo",
       "args": [
@@ -36,21 +49,38 @@
         "cwd": "${workspaceRoot}/cube"
       },
       "group": "build"
-    },    
-    {
-      "label": "copy_to_godot",
-      "type":"shell",
+    },
+{
+      "label": "copy_to_godot_i686-pc-windows-msvc",
+      "type": "shell",
       "command": "copy",
-      "args":[
-        "source","target/x86_64-pc-windows-msvc/debug/cube.dll", "destination", "../x86_64-pc-windows-msvc/"
+      "args": [
+        "RustLibs/cube/target/i686-pc-windows-msvc/debug/cube.dll",
+        "GodotClient/dlls/i686-pc-windows-msvc.dll"
       ],
       "options": {
-        "cwd": "${workspaceRoot}/cube"
+        "cwd": "${workspaceRoot}/.."
       },
+      "problemMatcher": []
     },
+
+    // Execute all copy tasks
+    {
+      "label": "copy_to_godot",
+      "dependsOn": [
+        "copy_to_godot_windows-x86_64",
+        "copy_to_godot_i686-pc-windows-msvc"
+      ],
+      "problemMatcher": []
+    },
+    // Build + Copy all targets
     {
       "label": "build_all_targets",
-      "dependsOn":["windows x86_64", "windows i686", "copy_to_godot" ]
-    },
+      "dependsOn": [
+        "x86_64-pc-windows-msvc",
+        "i686-pc-windows-msvc",
+        "copy_to_godot"
+      ]
+    }
   ]
 }

@@ -1,11 +1,11 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
-[sub_resource type="CapsuleShape" id=1]
+[ext_resource path="res://gdnative_lib.tres" type="GDNativeLibrary" id=1]
 
-[node name="Spatial" type="Spatial"]
+[sub_resource type="NativeScript" id=1]
+resource_name = "HelloWorld"
+class_name = "HelloWorld"
+library = ExtResource( 1 )
 
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.100057, 0.0574816, 2.85395 )
-
-[node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 1 )
+[node name="Node2D" type="Node2D"]
+script = SubResource( 1 )
