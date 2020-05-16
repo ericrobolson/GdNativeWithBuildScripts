@@ -1,15 +1,31 @@
+mod character;
+
+use fixed;
 use gdnative::*;
 
 /// The HelloWorld "class"
 #[derive(NativeClass)]
 #[inherit(Node)]
-pub struct GameEngine;
+pub struct GameEngine {
+    frame: usize,
+}
+
+enum EngineInputs {
+    MoveLeft,
+    MoveRight,
+    MoveUp,
+    MoveDown,
+    HeavyAttack,
+    LightAttack,
+    Block,
+    Dodge,
+}
 
 #[methods]
 impl GameEngine {
     /// The "constructor" of the class.
     fn _init(_owner: Node) -> Self {
-        Self
+        Self { frame: 0 }
     }
 
     // To make a method known to Godot, use the #[export] attribute.
@@ -26,6 +42,52 @@ impl GameEngine {
         // output tab as well.
         godot_print!("hello, world. This is an engine test.");
     }
+
+    #[export]
+    unsafe fn _physics_process(&mut self, mut owner: Node, delta: f64) {
+        let input = get_mapped_input();
+
+        if input.is_empty() == false {
+            self.frame += 1;
+            godot_print!("Tick: {}", self.frame);
+            //Do execution stuff
+        }
+    }
+}
+
+fn get_mapped_input() -> Vec<EngineInputs> {
+    // TODO: change this from a 'polling' pattern to a 'event' pattern to collect all inputs that occured.
+    // Then, push them into the engine? Not sure if that's the direction I want to take or not. For now, don't worry about it.
+    let input = Input::godot_singleton();
+
+    let mut inputs = vec![];
+
+    if Input::is_action_pressed(&input, GodotString::from_str("character_move_up")) {
+        inputs.push(EngineInputs::MoveUp);
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str("character_move_down")) {
+        inputs.push(EngineInputs::MoveDown);
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str("character_move_left")) {
+        inputs.push(EngineInputs::MoveLeft);
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str("character_move_right")) {
+        inputs.push(EngineInputs::MoveRight);
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str("character_dodge")) {
+        inputs.push(EngineInputs::Dodge);
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str("character_heavy_attack")) {
+        inputs.push(EngineInputs::HeavyAttack);
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str("character_light_attack")) {
+        inputs.push(EngineInputs::LightAttack);
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str("character_block")) {
+        inputs.push(EngineInputs::Block);
+    }
+
+    return inputs;
 }
 
 // Function that registers all exposed classes to Godot

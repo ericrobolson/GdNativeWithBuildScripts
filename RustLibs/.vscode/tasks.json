@@ -92,6 +92,7 @@
         "i686-pc-windows-msvc",
         "copy_to_godot"
       ],
+      "dependsOrder": "sequence",
       "problemMatcher": [],
       "group": "build"
 
