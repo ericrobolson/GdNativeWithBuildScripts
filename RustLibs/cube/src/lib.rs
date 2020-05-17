@@ -1,5 +1,6 @@
-mod character;
-
+pub mod lib_core;
+use lib_core::{EngineInputs, InputType};
+mod ecs;
 use fixed;
 use gdnative::*;
 
@@ -8,24 +9,21 @@ use gdnative::*;
 #[inherit(Node)]
 pub struct GameEngine {
     frame: usize,
-}
-
-enum EngineInputs {
-    MoveLeft,
-    MoveRight,
-    MoveUp,
-    MoveDown,
-    HeavyAttack,
-    LightAttack,
-    Block,
-    Dodge,
+    executed_frames: usize,
+    player_inputs: Vec<EngineInputs>,
+    world: ecs::World,
 }
 
 #[methods]
 impl GameEngine {
     /// The "constructor" of the class.
     fn _init(_owner: Node) -> Self {
-        Self { frame: 0 }
+        Self {
+            frame: 0,
+            executed_frames: 0,
+            player_inputs: vec![],
+            world: ecs::World::new(),
+        }
     }
 
     // To make a method known to Godot, use the #[export] attribute.
@@ -37,57 +35,101 @@ impl GameEngine {
     // methods MUST have `owner: BaseClass` as their second arguments,
     // before all other arguments in the signature.
     #[export]
-    fn _ready(&self, _owner: Node) {
-        // The `godot_print!` macro works like `println!` but prints to the Godot-editor
-        // output tab as well.
-        godot_print!("hello, world. This is an engine test.");
+    fn _ready(&self, _owner: Node) {}
+
+    #[export]
+    unsafe fn _input(&mut self, mut owner: Node, event: InputEvent) {
+        const MOVE_UP: &str = "character_move_up";
+        const MOVE_DOWN: &str = "character_move_down";
+        const MOVE_LEFT: &str = "character_move_left";
+        const MOVE_RIGHT: &str = "character_move_right";
+
+        const DODGE: &str = "character_dodge";
+        const BLOCK: &str = "character_block";
+
+        const HEAVY_ATK: &str = "character_heavy_attack";
+        const LIGHT_ATK: &str = "character_light_attack";
+
+        // Move Up
+        if event.is_action_pressed(GodotString::from_str(MOVE_UP), false) {
+            self.player_inputs
+                .push(EngineInputs::MoveUp(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(MOVE_UP)) {
+            self.player_inputs
+                .push(EngineInputs::MoveUp(InputType::Released));
+        }
+        // Move Down
+        else if event.is_action_pressed(GodotString::from_str(MOVE_DOWN), false) {
+            self.player_inputs
+                .push(EngineInputs::MoveDown(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(MOVE_DOWN)) {
+            self.player_inputs
+                .push(EngineInputs::MoveDown(InputType::Released));
+        }
+        // Move Left
+        else if event.is_action_pressed(GodotString::from_str(MOVE_LEFT), false) {
+            self.player_inputs
+                .push(EngineInputs::MoveLeft(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(MOVE_LEFT)) {
+            self.player_inputs
+                .push(EngineInputs::MoveLeft(InputType::Released));
+        }
+        // Move Right
+        else if event.is_action_pressed(GodotString::from_str(MOVE_RIGHT), false) {
+            self.player_inputs
+                .push(EngineInputs::MoveRight(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(MOVE_RIGHT)) {
+            self.player_inputs
+                .push(EngineInputs::MoveRight(InputType::Released));
+        }
+        // Dodge
+        else if event.is_action_pressed(GodotString::from_str(DODGE), false) {
+            self.player_inputs
+                .push(EngineInputs::Dodge(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(DODGE)) {
+            self.player_inputs
+                .push(EngineInputs::Dodge(InputType::Released));
+        }
+        // Block
+        else if event.is_action_pressed(GodotString::from_str(BLOCK), false) {
+            self.player_inputs
+                .push(EngineInputs::Block(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(BLOCK)) {
+            self.player_inputs
+                .push(EngineInputs::Block(InputType::Released));
+        }
+        // Heavy Atk
+        else if event.is_action_pressed(GodotString::from_str(HEAVY_ATK), false) {
+            self.player_inputs
+                .push(EngineInputs::HeavyAttack(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(HEAVY_ATK)) {
+            self.player_inputs
+                .push(EngineInputs::HeavyAttack(InputType::Released));
+        }
+        // Light Atk
+        else if event.is_action_pressed(GodotString::from_str(LIGHT_ATK), false) {
+            self.player_inputs
+                .push(EngineInputs::LightAttack(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(LIGHT_ATK)) {
+            self.player_inputs
+                .push(EngineInputs::LightAttack(InputType::Released));
+        }
     }
 
     #[export]
     unsafe fn _physics_process(&mut self, mut owner: Node, delta: f64) {
-        let input = get_mapped_input();
+        self.frame += 1;
 
-        if input.is_empty() == false {
-            self.frame += 1;
-            godot_print!("Tick: {}", self.frame);
-            //Do execution stuff
+        if self.player_inputs.is_empty() == false {
+            self.executed_frames += 1;
+            godot_print!("f: {}", self.executed_frames);
+
+            //TODO: stuff with engine inputs
+            self.world.dispatch();
+
+            self.player_inputs.clear();
         }
     }
-}
-
-fn get_mapped_input() -> Vec<EngineInputs> {
-    // TODO: change this from a 'polling' pattern to a 'event' pattern to collect all inputs that occured.
-    // Then, push them into the engine? Not sure if that's the direction I want to take or not. For now, don't worry about it.
-    let input = Input::godot_singleton();
-
-    let mut inputs = vec![];
-
-    if Input::is_action_pressed(&input, GodotString::from_str("character_move_up")) {
-        inputs.push(EngineInputs::MoveUp);
-    }
-    if Input::is_action_pressed(&input, GodotString::from_str("character_move_down")) {
-        inputs.push(EngineInputs::MoveDown);
-    }
-    if Input::is_action_pressed(&input, GodotString::from_str("character_move_left")) {
-        inputs.push(EngineInputs::MoveLeft);
-    }
-    if Input::is_action_pressed(&input, GodotString::from_str("character_move_right")) {
-        inputs.push(EngineInputs::MoveRight);
-    }
-    if Input::is_action_pressed(&input, GodotString::from_str("character_dodge")) {
-        inputs.push(EngineInputs::Dodge);
-    }
-    if Input::is_action_pressed(&input, GodotString::from_str("character_heavy_attack")) {
-        inputs.push(EngineInputs::HeavyAttack);
-    }
-    if Input::is_action_pressed(&input, GodotString::from_str("character_light_attack")) {
-        inputs.push(EngineInputs::LightAttack);
-    }
-    if Input::is_action_pressed(&input, GodotString::from_str("character_block")) {
-        inputs.push(EngineInputs::Block);
-    }
-
-    return inputs;
 }
 
 // Function that registers all exposed classes to Godot
