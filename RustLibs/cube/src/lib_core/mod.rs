@@ -24,7 +24,7 @@ pub enum EngineInputs {
     MoveUp(InputType),
     MoveDown(InputType),
     HeavyAttack(InputType),
+    MediumAttack(InputType),
     LightAttack(InputType),
-    Block(InputType),
-    Dodge(InputType),
+    Jump(InputType),
 }
