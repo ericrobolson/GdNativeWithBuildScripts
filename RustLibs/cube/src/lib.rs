@@ -14,6 +14,20 @@ pub struct GameEngine {
     world: ecs::World,
 }
 
+struct InputConst {}
+impl InputConst {
+    pub const MOVE_UP: &'static str = "character_move_up";
+    pub const MOVE_DOWN: &'static str = "character_move_down";
+    pub const MOVE_LEFT: &'static str = "character_move_left";
+    pub const MOVE_RIGHT: &'static str = "character_move_right";
+
+    pub const DODGE: &'static str = "character_dodge";
+    pub const BLOCK: &'static str = "character_block";
+
+    pub const HEAVY_ATK: &'static str = "character_heavy_attack";
+    pub const LIGHT_ATK: &'static str = "character_light_attack";
+}
+
 #[methods]
 impl GameEngine {
     /// The "constructor" of the class.
@@ -39,97 +53,194 @@ impl GameEngine {
 
     #[export]
     unsafe fn _input(&mut self, mut owner: Node, event: InputEvent) {
-        const MOVE_UP: &str = "character_move_up";
-        const MOVE_DOWN: &str = "character_move_down";
-        const MOVE_LEFT: &str = "character_move_left";
-        const MOVE_RIGHT: &str = "character_move_right";
-
-        const DODGE: &str = "character_dodge";
-        const BLOCK: &str = "character_block";
-
-        const HEAVY_ATK: &str = "character_heavy_attack";
-        const LIGHT_ATK: &str = "character_light_attack";
-
         // Move Up
-        if event.is_action_pressed(GodotString::from_str(MOVE_UP), false) {
+        if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_UP), false) {
             self.player_inputs
                 .push(EngineInputs::MoveUp(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(MOVE_UP)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_UP)) {
             self.player_inputs
                 .push(EngineInputs::MoveUp(InputType::Released));
         }
         // Move Down
-        else if event.is_action_pressed(GodotString::from_str(MOVE_DOWN), false) {
+        else if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_DOWN), false) {
             self.player_inputs
                 .push(EngineInputs::MoveDown(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(MOVE_DOWN)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_DOWN)) {
             self.player_inputs
                 .push(EngineInputs::MoveDown(InputType::Released));
         }
         // Move Left
-        else if event.is_action_pressed(GodotString::from_str(MOVE_LEFT), false) {
+        else if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_LEFT), false) {
             self.player_inputs
                 .push(EngineInputs::MoveLeft(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(MOVE_LEFT)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_LEFT)) {
             self.player_inputs
                 .push(EngineInputs::MoveLeft(InputType::Released));
         }
         // Move Right
-        else if event.is_action_pressed(GodotString::from_str(MOVE_RIGHT), false) {
+        else if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_RIGHT), false) {
             self.player_inputs
                 .push(EngineInputs::MoveRight(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(MOVE_RIGHT)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_RIGHT)) {
             self.player_inputs
                 .push(EngineInputs::MoveRight(InputType::Released));
         }
         // Dodge
-        else if event.is_action_pressed(GodotString::from_str(DODGE), false) {
+        else if event.is_action_pressed(GodotString::from_str(InputConst::DODGE), false) {
             self.player_inputs
                 .push(EngineInputs::Dodge(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(DODGE)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::DODGE)) {
             self.player_inputs
                 .push(EngineInputs::Dodge(InputType::Released));
         }
         // Block
-        else if event.is_action_pressed(GodotString::from_str(BLOCK), false) {
+        else if event.is_action_pressed(GodotString::from_str(InputConst::BLOCK), false) {
             self.player_inputs
                 .push(EngineInputs::Block(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(BLOCK)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::BLOCK)) {
             self.player_inputs
                 .push(EngineInputs::Block(InputType::Released));
         }
         // Heavy Atk
-        else if event.is_action_pressed(GodotString::from_str(HEAVY_ATK), false) {
+        else if event.is_action_pressed(GodotString::from_str(InputConst::HEAVY_ATK), false) {
             self.player_inputs
                 .push(EngineInputs::HeavyAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(HEAVY_ATK)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::HEAVY_ATK)) {
             self.player_inputs
                 .push(EngineInputs::HeavyAttack(InputType::Released));
         }
         // Light Atk
-        else if event.is_action_pressed(GodotString::from_str(LIGHT_ATK), false) {
+        else if event.is_action_pressed(GodotString::from_str(InputConst::LIGHT_ATK), false) {
             self.player_inputs
                 .push(EngineInputs::LightAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(LIGHT_ATK)) {
+        } else if event.is_action_released(GodotString::from_str(InputConst::LIGHT_ATK)) {
             self.player_inputs
                 .push(EngineInputs::LightAttack(InputType::Released));
         }
     }
-
     #[export]
     unsafe fn _physics_process(&mut self, mut owner: Node, delta: f64) {
         self.frame += 1;
+
+        self.player_inputs.append(&mut input_poll());
 
         if self.player_inputs.is_empty() == false {
             self.executed_frames += 1;
             godot_print!("f: {}", self.executed_frames);
 
-            //TODO: stuff with engine inputs
+            self.world.register_player_inputs(&self.player_inputs);
             self.world.dispatch();
 
             self.player_inputs.clear();
         }
+
+        self.link_to_gd_nodes(owner);
     }
+
+    fn link_to_gd_nodes(&mut self, mut owner: Node) {
+        // Create any nodes that need be created
+        for e in self.world.entities() {
+            let gdnode = &self.world.gd_nodes[e];
+            let transform = &self.world.transforms[e];
+
+            // Todo: what should constitute a gdnode creation?
+            if transform.is_none() {
+                continue;
+            }
+
+            //TODO: deletion of nodes
+
+            // Create gdnode if it doesn't exist
+            if gdnode.is_none() {
+                let mut gd_node = gdnative::Node2D::new();
+
+                unsafe {
+                    gd_node.add_child(Some(gdnative::Button::new().cast().unwrap()), false);
+                }
+
+                unsafe {
+                    owner.add_child(Some(unsafe { gd_node.cast().unwrap() }), false);
+                };
+
+                let id = unsafe { gd_node.get_instance_id() };
+                self.world.gd_nodes[e] = Some(ecs::components::GdNodeComponent::new(id));
+            }
+        }
+
+        // Get the nodes
+        let children = unsafe { owner.get_children() };
+        let mut children: Vec<Node> = children
+            .iter()
+            .filter(|c| c.has_method(&GodotString::from_str("get_instance_id")))
+            .map(|c| c.try_to_object::<Node>())
+            .filter(|c| c.is_some())
+            .map(|c| c.unwrap())
+            .collect();
+
+        // Update transforms
+        for e in self.world.entities() {
+            let gd_node_component = &self.world.gd_nodes[e];
+            if gd_node_component.is_none() {
+                continue;
+            }
+
+            let transform = &self.world.transforms[e];
+            if transform.is_none() {
+                continue;
+            }
+
+            let transform = transform.as_ref().unwrap();
+
+            let gd_node_component = gd_node_component.as_ref().unwrap();
+
+            let mut gd_node = children
+                .iter_mut()
+                .find(|c| unsafe { c.get_instance_id() } == gd_node_component.id);
+
+            if gd_node.is_none() {
+                continue;
+            }
+
+            let gd_node = gd_node.unwrap();
+            let gd_node = unsafe { gd_node.cast::<Node2D>() };
+            if gd_node.is_some() {
+                // Update position
+                unsafe { gd_node.unwrap().set_position(transform.position.into()) };
+            }
+        }
+    }
+}
+
+fn input_poll() -> Vec<EngineInputs> {
+    let mut inputs = vec![];
+    let input = Input::godot_singleton();
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::MOVE_UP)) {
+        inputs.push(EngineInputs::MoveUp(InputType::Held))
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::MOVE_DOWN)) {
+        inputs.push(EngineInputs::MoveDown(InputType::Held))
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::MOVE_LEFT)) {
+        inputs.push(EngineInputs::MoveLeft(InputType::Held))
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::MOVE_RIGHT)) {
+        inputs.push(EngineInputs::MoveRight(InputType::Held))
+    }
+
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::BLOCK)) {
+        inputs.push(EngineInputs::Block(InputType::Held))
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::DODGE)) {
+        inputs.push(EngineInputs::Dodge(InputType::Held))
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::HEAVY_ATK)) {
+        inputs.push(EngineInputs::HeavyAttack(InputType::Held))
+    }
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::LIGHT_ATK)) {
+        inputs.push(EngineInputs::LightAttack(InputType::Held))
+    }
+
+    return inputs;
 }
 
 // Function that registers all exposed classes to Godot

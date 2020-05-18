@@ -1,9 +1,11 @@
 pub mod systems;
 
+use crate::lib_core::EngineInputs;
+
 pub mod components;
 use components::{
-    AilmentsComponent, Components, EngineInputsComponent, FacingComponent, HitPointComponent,
-    MoveSpeedComponent, PlayerComponent, TransformComponent, VelocityComponent,
+    AilmentsComponent, Components, EngineInputsComponent, FacingComponent, GdNodeComponent,
+    HitPointComponent, MoveSpeedComponent, PlayerComponent, TransformComponent, VelocityComponent,
 };
 
 pub type Entity = usize;
@@ -13,7 +15,7 @@ pub type Storage<T> = Vec<Option<T>>;
 // TODO: parent/child implementation based off of this:
 // http://bitsquid.blogspot.com/2014/10/building-data-oriented-entity-system.html
 pub struct World {
-    pub next_entity: Entity,
+    next_entity: Entity,
     pub parents: Storage<Entity>,
     pub ailments: Storage<AilmentsComponent>,
     pub engine_inputs: Storage<EngineInputsComponent>,
@@ -23,13 +25,13 @@ pub struct World {
     pub transforms: Storage<TransformComponent>,
     pub velocities: Storage<VelocityComponent>,
     pub move_speeds: Storage<MoveSpeedComponent>,
+    pub gd_nodes: Storage<GdNodeComponent>,
 }
 
 impl World {
     pub const MAX_ENTITIES: usize = 1000;
-
     pub fn new() -> Self {
-        return Self {
+        let mut world = Self {
             next_entity: 0,
             parents: generate_storage(),
             ailments: generate_storage(),
@@ -40,12 +42,39 @@ impl World {
             transforms: generate_storage(),
             velocities: generate_storage(),
             move_speeds: generate_storage(),
+            gd_nodes: generate_storage(),
         };
+
+        let e = world.add_entity();
+        let transform_component = components::TransformComponent::new();
+
+        world.transforms[e] = Some(transform_component);
+
+        return world;
+    }
+
+    pub fn entities(&self) -> std::ops::Range<usize> {
+        0..self.next_entity
+    }
+
+    pub fn register_player_inputs(&mut self, inputs: &Vec<EngineInputs>) {
+        for e in self.entities() {
+            let player = &self.players[e];
+            let engine_inputs = &self.engine_inputs[e];
+
+            if player.is_none() || engine_inputs.is_none() {
+                continue;
+            }
+
+            let mut engine_inputs = engine_inputs.clone().unwrap();
+            engine_inputs.inputs.append(&mut (inputs.clone()));
+
+            self.engine_inputs[e] = Some(engine_inputs);
+        }
     }
 
     pub fn dispatch(&mut self) {
         systems::character_action_system(self);
-        systems::input_cleanup_system(self);
         systems::position_update_system(self);
 
         self.maintain();
@@ -59,21 +88,10 @@ impl World {
         return e;
     }
 
-    pub fn register_component(&mut self, entity: Entity, component: Components) {
-        match component {
-            Components::HitPoints(c) => self.hitpoints[entity] = Some(c),
-            Components::Player(c) => self.players[entity] = Some(c),
-            Components::Facing(c) => self.facing_direction[entity] = Some(c),
-            Components::EngineInputs(c) => self.engine_inputs[entity] = Some(c),
-            Components::Ailments(c) => self.ailments[entity] = Some(c),
-            Components::Transform(c) => self.transforms[entity] = Some(c),
-            Components::Velocity(c) => self.velocities[entity] = Some(c),
-            Components::MoveSpeedComponent(c) => self.move_speeds[entity] = Some(c),
-        };
-    }
-
     fn maintain(&mut self) {
         //TODO: shift entities over, delete any missing entities, update indexes.
+        // General cleanup function.
+        systems::input_cleanup_system(self);
     }
 
     fn delete_entity(&mut self, entity: Entity) {

@@ -10,35 +10,63 @@ pub enum Components {
     Transform(TransformComponent),
     Velocity(VelocityComponent),
     MoveSpeedComponent(MoveSpeedComponent),
+    GdNodeComponent(GdNodeComponent),
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
+pub struct GdNodeComponent {
+    pub id: i64,
+}
+
+impl GdNodeComponent {
+    pub fn new(id: i64) -> Self {
+        return Self { id: id };
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct MoveSpeedComponent {
     pub value: FixedNumber,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct HitPointComponent {
     pub value: u32,
     pub max_value: u32,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct VelocityComponent {
     pub value: Vec3d,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TransformComponent {
     pub position: Vec3d,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+impl TransformComponent {
+    pub fn new() -> Self {
+        return Self {
+            position: Vec3d::default(),
+        };
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct PlayerComponent {}
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct FacingComponent {
     pub direction: Direction,
+}
+
+impl FacingComponent {
+    pub fn new(direction: Direction) -> Self {
+        return Self {
+            direction: direction,
+        };
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -51,7 +79,7 @@ pub struct AilmentsComponent {
     pub ailments: Vec<Ailment>,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 /// Information related to an ailment a character is inflicted with.
 pub struct Ailment {
     /// The type of the modifier
@@ -62,7 +90,7 @@ pub struct Ailment {
     pub status_meter: Range,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 /// Various types of ailments that can be inflicted upon characters. For now, keep small until more things need to be added.
 pub enum AilmentTypes {
     /// A modifier which when triggered, causes a single hp loss event and resets the meter to 0.
