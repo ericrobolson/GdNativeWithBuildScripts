@@ -21,11 +21,11 @@ impl InputConst {
     pub const MOVE_LEFT: &'static str = "character_move_left";
     pub const MOVE_RIGHT: &'static str = "character_move_right";
 
-    pub const JUMP: &'static str = "character_jump";
+    pub const HORZ_LITE_ATK: &'static str = "character_horizontal_light_attack";
+    pub const HORZ_HEAVY_ATK: &'static str = "character_horizontal_heavy_attack";
 
-    pub const HEAVY_ATK: &'static str = "character_heavy_attack";
-    pub const MEDIUM_ATK: &'static str = "character_medium_attack";
-    pub const LIGHT_ATK: &'static str = "character_light_attack";
+    pub const VERT_LITE_ATK: &'static str = "character_vertical_light_attack";
+    pub const VERT_HEAVY_ATK: &'static str = "character_vertical_heavy_attack";
 }
 
 #[methods]
@@ -85,37 +85,39 @@ impl GameEngine {
             self.player_inputs
                 .push(EngineInputs::MoveRight(InputType::Released));
         }
-        // Jump
-        else if event.is_action_pressed(GodotString::from_str(InputConst::JUMP), false) {
+        // Horz Heavy Atk
+        else if event.is_action_pressed(GodotString::from_str(InputConst::HORZ_HEAVY_ATK), false)
+        {
             self.player_inputs
-                .push(EngineInputs::Jump(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::JUMP)) {
+                .push(EngineInputs::HorizontalHeavyAttack(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(InputConst::HORZ_HEAVY_ATK)) {
             self.player_inputs
-                .push(EngineInputs::Jump(InputType::Released));
+                .push(EngineInputs::HorizontalHeavyAttack(InputType::Released));
         }
-        // Heavy Atk
-        else if event.is_action_pressed(GodotString::from_str(InputConst::HEAVY_ATK), false) {
+        // Horz Heavy Atk
+        else if event.is_action_pressed(GodotString::from_str(InputConst::HORZ_LITE_ATK), false) {
             self.player_inputs
-                .push(EngineInputs::HeavyAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::HEAVY_ATK)) {
+                .push(EngineInputs::HorizontalLightAttack(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(InputConst::HORZ_LITE_ATK)) {
             self.player_inputs
-                .push(EngineInputs::HeavyAttack(InputType::Released));
+                .push(EngineInputs::HorizontalLightAttack(InputType::Released));
         }
-        // Heavy Atk
-        else if event.is_action_pressed(GodotString::from_str(InputConst::MEDIUM_ATK), false) {
+        // Vert Heavy Atk
+        else if event.is_action_pressed(GodotString::from_str(InputConst::VERT_HEAVY_ATK), false)
+        {
             self.player_inputs
-                .push(EngineInputs::MediumAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::MEDIUM_ATK)) {
+                .push(EngineInputs::VerticalHeavyAttack(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(InputConst::VERT_HEAVY_ATK)) {
             self.player_inputs
-                .push(EngineInputs::MediumAttack(InputType::Released));
+                .push(EngineInputs::VerticalHeavyAttack(InputType::Released));
         }
-        // Light Atk
-        else if event.is_action_pressed(GodotString::from_str(InputConst::LIGHT_ATK), false) {
+        // Vert Heavy Atk
+        else if event.is_action_pressed(GodotString::from_str(InputConst::VERT_LITE_ATK), false) {
             self.player_inputs
-                .push(EngineInputs::LightAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::LIGHT_ATK)) {
+                .push(EngineInputs::VerticalLightAttack(InputType::Pressed));
+        } else if event.is_action_released(GodotString::from_str(InputConst::VERT_LITE_ATK)) {
             self.player_inputs
-                .push(EngineInputs::LightAttack(InputType::Released));
+                .push(EngineInputs::VerticalLightAttack(InputType::Released));
         }
     }
     #[export]
@@ -227,17 +229,17 @@ fn input_poll() -> Vec<EngineInputs> {
         inputs.push(EngineInputs::MoveRight(InputType::Held))
     }
 
-    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::JUMP)) {
-        inputs.push(EngineInputs::Jump(InputType::Held))
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::HORZ_LITE_ATK)) {
+        inputs.push(EngineInputs::HorizontalLightAttack(InputType::Held))
     }
-    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::HEAVY_ATK)) {
-        inputs.push(EngineInputs::HeavyAttack(InputType::Held))
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::HORZ_HEAVY_ATK)) {
+        inputs.push(EngineInputs::HorizontalHeavyAttack(InputType::Held))
     }
-    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::MEDIUM_ATK)) {
-        inputs.push(EngineInputs::MediumAttack(InputType::Held))
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::VERT_LITE_ATK)) {
+        inputs.push(EngineInputs::VerticalLightAttack(InputType::Held))
     }
-    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::LIGHT_ATK)) {
-        inputs.push(EngineInputs::LightAttack(InputType::Held))
+    if Input::is_action_pressed(&input, GodotString::from_str(InputConst::VERT_HEAVY_ATK)) {
+        inputs.push(EngineInputs::VerticalHeavyAttack(InputType::Held))
     }
 
     return inputs;

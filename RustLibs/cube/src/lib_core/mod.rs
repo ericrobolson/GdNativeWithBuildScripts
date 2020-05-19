@@ -19,12 +19,12 @@ pub enum InputType {
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum EngineInputs {
-    MoveLeft(InputType),
-    MoveRight(InputType),
     MoveUp(InputType),
     MoveDown(InputType),
-    HeavyAttack(InputType),
-    MediumAttack(InputType),
-    LightAttack(InputType),
-    Jump(InputType),
+    MoveLeft(InputType),
+    MoveRight(InputType),
+    HorizontalLightAttack(InputType),
+    HorizontalHeavyAttack(InputType),
+    VerticalLightAttack(InputType),
+    VerticalHeavyAttack(InputType),
 }
