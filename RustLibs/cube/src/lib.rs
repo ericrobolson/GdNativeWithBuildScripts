@@ -10,7 +10,7 @@ use gdnative::*;
 pub struct GameEngine {
     frame: usize,
     executed_frames: usize,
-    player_inputs: Vec<EngineInputs>,
+    player_inputs: Vec<InputType>,
     world: ecs::World,
 }
 
@@ -21,11 +21,25 @@ impl InputConst {
     pub const MOVE_LEFT: &'static str = "character_move_left";
     pub const MOVE_RIGHT: &'static str = "character_move_right";
 
-    pub const HORZ_LITE_ATK: &'static str = "character_horizontal_light_attack";
-    pub const HORZ_HEAVY_ATK: &'static str = "character_horizontal_heavy_attack";
+    pub const JUMP: &'static str = "character_jump";
+    pub const DODGE: &'static str = "character_dodge";
 
-    pub const VERT_LITE_ATK: &'static str = "character_vertical_light_attack";
-    pub const VERT_HEAVY_ATK: &'static str = "character_vertical_heavy_attack";
+    pub const HORZ_ATK: &'static str = "character_horizontal_attack";
+    pub const VERT_ATK: &'static str = "character_vertical_attack";
+}
+
+fn get_input_from_event(
+    button: &'static str,
+    input: EngineInputs,
+    event: InputEvent,
+) -> Option<InputType> {
+    if event.is_action_pressed(GodotString::from_str(button), false) {
+        return Some(InputType::Pressed(input));
+    } else if event.is_action_released(GodotString::from_str(button)) {
+        return Some(InputType::Released(input));
+    }
+
+    return None;
 }
 
 #[methods]
@@ -54,70 +68,16 @@ impl GameEngine {
     #[export]
     unsafe fn _input(&mut self, mut owner: Node, event: InputEvent) {
         // Move Up
-        if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_UP), false) {
-            self.player_inputs
-                .push(EngineInputs::MoveUp(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_UP)) {
-            self.player_inputs
-                .push(EngineInputs::MoveUp(InputType::Released));
+        let up = get_input_from_event(InputConst::MOVE_UP, EngineInputs::MoveUp, event);
+        if up.is_some() {
+            self.player_inputs.push(up.unwrap());
+            return;
         }
         // Move Down
-        else if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_DOWN), false) {
-            self.player_inputs
-                .push(EngineInputs::MoveDown(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_DOWN)) {
-            self.player_inputs
-                .push(EngineInputs::MoveDown(InputType::Released));
-        }
-        // Move Left
-        else if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_LEFT), false) {
-            self.player_inputs
-                .push(EngineInputs::MoveLeft(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_LEFT)) {
-            self.player_inputs
-                .push(EngineInputs::MoveLeft(InputType::Released));
-        }
-        // Move Right
-        else if event.is_action_pressed(GodotString::from_str(InputConst::MOVE_RIGHT), false) {
-            self.player_inputs
-                .push(EngineInputs::MoveRight(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::MOVE_RIGHT)) {
-            self.player_inputs
-                .push(EngineInputs::MoveRight(InputType::Released));
-        }
-        // Horz Heavy Atk
-        else if event.is_action_pressed(GodotString::from_str(InputConst::HORZ_HEAVY_ATK), false)
-        {
-            self.player_inputs
-                .push(EngineInputs::HorizontalHeavyAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::HORZ_HEAVY_ATK)) {
-            self.player_inputs
-                .push(EngineInputs::HorizontalHeavyAttack(InputType::Released));
-        }
-        // Horz Heavy Atk
-        else if event.is_action_pressed(GodotString::from_str(InputConst::HORZ_LITE_ATK), false) {
-            self.player_inputs
-                .push(EngineInputs::HorizontalLightAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::HORZ_LITE_ATK)) {
-            self.player_inputs
-                .push(EngineInputs::HorizontalLightAttack(InputType::Released));
-        }
-        // Vert Heavy Atk
-        else if event.is_action_pressed(GodotString::from_str(InputConst::VERT_HEAVY_ATK), false)
-        {
-            self.player_inputs
-                .push(EngineInputs::VerticalHeavyAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::VERT_HEAVY_ATK)) {
-            self.player_inputs
-                .push(EngineInputs::VerticalHeavyAttack(InputType::Released));
-        }
-        // Vert Heavy Atk
-        else if event.is_action_pressed(GodotString::from_str(InputConst::VERT_LITE_ATK), false) {
-            self.player_inputs
-                .push(EngineInputs::VerticalLightAttack(InputType::Pressed));
-        } else if event.is_action_released(GodotString::from_str(InputConst::VERT_LITE_ATK)) {
-            self.player_inputs
-                .push(EngineInputs::VerticalLightAttack(InputType::Released));
+        let down = get_input_from_event(InputConst::MOVE_DOWN, EngineInputs::MoveDown, event);
+        if down.is_some() {
+            self.player_inputs.push(down.unwrap());
+            return;
         }
     }
     #[export]

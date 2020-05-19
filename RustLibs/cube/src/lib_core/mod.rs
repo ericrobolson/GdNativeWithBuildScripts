@@ -12,19 +12,21 @@ pub use direction::Direction;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum InputType {
-    Pressed,
-    Held,
-    Released,
+    Pressed(EngineInputs),
+    Held(EngineInputs),
+    Released(EngineInputs),
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum EngineInputs {
-    MoveUp(InputType),
-    MoveDown(InputType),
-    MoveLeft(InputType),
-    MoveRight(InputType),
-    HorizontalLightAttack(InputType),
-    HorizontalHeavyAttack(InputType),
-    VerticalLightAttack(InputType),
-    VerticalHeavyAttack(InputType),
+    MoveUp,
+    MoveDown,
+    MoveLeft,
+    MoveRight,
+
+    HorizontalAttack,
+    VerticalAttack,
+
+    Jump,
+    Dodge,
 }

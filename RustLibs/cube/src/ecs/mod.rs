@@ -5,8 +5,9 @@ use crate::lib_core::EngineInputs;
 
 pub mod components;
 use components::{
-    AilmentsComponent, Components, EngineInputsComponent, FacingComponent, GdNodeComponent,
-    HitPointComponent, MoveSpeedComponent, PlayerComponent, TransformComponent, VelocityComponent,
+    AilmentsComponent, EngineInputsComponent, FacingComponent, GdNodeComponent, HitPointComponent,
+    MoveSpeedComponent, PlayerComponent, TargetComponent, TargetableComponent, TransformComponent,
+    VelocityComponent,
 };
 
 pub type Entity = usize;
@@ -28,6 +29,8 @@ pub struct World {
     pub velocities: Storage<VelocityComponent>,
     pub move_speeds: Storage<MoveSpeedComponent>,
     pub gd_nodes: Storage<GdNodeComponent>,
+    pub targets: Storage<TargetComponent>,
+    pub targetables: Storage<TargetableComponent>,
 }
 
 impl World {
@@ -45,6 +48,8 @@ impl World {
             velocities: generate_storage(),
             move_speeds: generate_storage(),
             gd_nodes: generate_storage(),
+            targets: generate_storage(),
+            targetables: generate_storage(),
         };
 
         assemblages::assemblage_player(&mut world);

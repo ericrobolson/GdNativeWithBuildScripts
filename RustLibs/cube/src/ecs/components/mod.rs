@@ -1,17 +1,13 @@
+use crate::ecs::Entity;
 use crate::lib_core::{Direction, EngineInputs, FixedNumber, Range, Vec3d};
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum Components {
-    HitPoints(HitPointComponent),
-    Player(PlayerComponent),
-    Facing(FacingComponent),
-    EngineInputs(EngineInputsComponent),
-    Ailments(AilmentsComponent),
-    Transform(TransformComponent),
-    Velocity(VelocityComponent),
-    MoveSpeedComponent(MoveSpeedComponent),
-    GdNodeComponent(GdNodeComponent),
+pub struct TargetComponent {
+    pub entity: Entity,
 }
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct TargetableComponent {}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct GdNodeComponent {

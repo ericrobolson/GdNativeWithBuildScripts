@@ -17,25 +17,40 @@ pub fn character_action_system(world: &mut World) {
         let engine_inputs = engine_inputs.as_ref().unwrap();
 
         let mut movement_vec = Vec3d::default();
+        let mut rotation_vec = Vec3d::default();
 
-        for input in &engine_inputs.inputs {
-            match input {
-                EngineInputs::MoveDown(_) => {
-                    movement_vec.y += move_speed.value;
-                }
-                EngineInputs::MoveUp(_) => {
-                    movement_vec.y -= move_speed.value;
-                }
-                EngineInputs::MoveLeft(_) => {
-                    movement_vec.x -= move_speed.value;
-                }
-                EngineInputs::MoveRight(_) => {
-                    movement_vec.x += move_speed.value;
-                }
-                _ => {
-                    // Ignore anything other than inputs
+        let target_entity = &world.targets[e].clone();
+        let mut target_transform = None;
+
+        if target_entity.is_some() {
+            let target_entity = target_entity.as_ref().unwrap();
+
+            target_transform = world.transforms[target_entity.entity].clone();
+        }
+
+        // If locked on, generate the movement based on their delta
+        if target_transform.is_some() {
+            for input in &engine_inputs.inputs {
+                match input {
+                    EngineInputs::MoveDown(_) => {
+                        movement_vec.y += move_speed.value;
+                    }
+                    EngineInputs::MoveUp(_) => {
+                        movement_vec.y -= move_speed.value;
+                    }
+                    EngineInputs::MoveLeft(_) => {
+                        movement_vec.x -= move_speed.value;
+                    }
+                    EngineInputs::MoveRight(_) => {
+                        movement_vec.x += move_speed.value;
+                    }
+                    _ => {
+                        // Ignore anything other than inputs
+                    }
                 }
             }
+
+            // Reorient the movement_vec so that it is relative to the target
         }
 
         let mut velocity = velocity.clone().unwrap();
