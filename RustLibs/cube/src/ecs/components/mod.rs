@@ -1,5 +1,5 @@
 use crate::ecs::Entity;
-use crate::lib_core::{Direction, EngineInputs, FixedNumber, Range, Vec3d};
+use crate::lib_core::{Direction, FixedNumber, InputType, Range, Vec3d};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct TargetComponent {
@@ -87,7 +87,7 @@ impl FacingComponent {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct EngineInputsComponent {
-    pub inputs: Vec<EngineInputs>,
+    pub inputs: Vec<InputType>,
 }
 
 impl EngineInputsComponent {

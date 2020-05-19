@@ -1,7 +1,7 @@
 mod assemblages;
 pub mod systems;
 
-use crate::lib_core::EngineInputs;
+use crate::lib_core::{EngineInputs, InputType};
 
 pub mod components;
 use components::{
@@ -61,7 +61,7 @@ impl World {
         0..self.next_entity
     }
 
-    pub fn register_player_inputs(&mut self, inputs: &Vec<EngineInputs>) {
+    pub fn register_player_inputs(&mut self, inputs: &Vec<InputType>) {
         for e in self.entities() {
             let player = &self.players[e];
             let engine_inputs = &self.engine_inputs[e];
