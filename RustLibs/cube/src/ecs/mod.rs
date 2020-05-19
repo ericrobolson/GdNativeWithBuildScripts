@@ -1,3 +1,4 @@
+mod assemblages;
 pub mod systems;
 
 use crate::lib_core::EngineInputs;
@@ -14,6 +15,7 @@ pub type Storage<T> = Vec<Option<T>>;
 
 // TODO: parent/child implementation based off of this:
 // http://bitsquid.blogspot.com/2014/10/building-data-oriented-entity-system.html
+#[derive(Debug)]
 pub struct World {
     next_entity: Entity,
     pub parents: Storage<Entity>,
@@ -45,10 +47,7 @@ impl World {
             gd_nodes: generate_storage(),
         };
 
-        let e = world.add_entity();
-        let transform_component = components::TransformComponent::new();
-
-        world.transforms[e] = Some(transform_component);
+        assemblages::assemblage_player(&mut world);
 
         return world;
     }
@@ -95,14 +94,7 @@ impl World {
     }
 
     fn delete_entity(&mut self, entity: Entity) {
-        self.hitpoints[entity] = None;
-        self.players[entity] = None;
-        self.facing_direction[entity] = None;
-        self.engine_inputs[entity] = None;
-        self.ailments[entity] = None;
-        self.transforms[entity] = None;
-        self.velocities[entity] = None;
-        self.move_speeds[entity] = None;
+        unimplemented!();
     }
 }
 

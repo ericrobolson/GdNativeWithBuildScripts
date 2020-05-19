@@ -21,16 +21,16 @@ pub fn character_action_system(world: &mut World) {
         for input in &engine_inputs.inputs {
             match input {
                 EngineInputs::MoveDown(_) => {
-                    movement_vec += Direction::South.to_normalized_vec3d();
+                    movement_vec.y += move_speed.value;
                 }
                 EngineInputs::MoveUp(_) => {
-                    movement_vec += Direction::North.to_normalized_vec3d();
+                    movement_vec.y -= move_speed.value;
                 }
                 EngineInputs::MoveLeft(_) => {
-                    movement_vec += Direction::West.to_normalized_vec3d();
+                    movement_vec.x -= move_speed.value;
                 }
                 EngineInputs::MoveRight(_) => {
-                    movement_vec += Direction::East.to_normalized_vec3d();
+                    movement_vec.x += move_speed.value;
                 }
                 _ => {
                     // Ignore anything other than inputs
@@ -38,17 +38,10 @@ pub fn character_action_system(world: &mut World) {
             }
         }
 
-        let normalized_movement_vec = movement_vec.normalize();
-        let velocity_vec = normalized_movement_vec.multiply(move_speed.value);
-
         let mut velocity = velocity.clone().unwrap();
-        velocity.value = velocity_vec;
+        velocity.value = movement_vec;
 
         world.velocities[e] = Some(velocity);
-
-        world.facing_direction[e] = Some(components::FacingComponent::new(Direction::from_vec3d(
-            &velocity_vec,
-        )));
     }
 }
 

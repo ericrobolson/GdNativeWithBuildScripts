@@ -29,6 +29,12 @@ pub struct MoveSpeedComponent {
     pub value: FixedNumber,
 }
 
+impl MoveSpeedComponent {
+    pub fn new(value: FixedNumber) -> Self {
+        return Self { value: value };
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct HitPointComponent {
     pub value: u32,
@@ -38,6 +44,14 @@ pub struct HitPointComponent {
 #[derive(Clone, Debug, PartialEq)]
 pub struct VelocityComponent {
     pub value: Vec3d,
+}
+
+impl VelocityComponent {
+    pub fn new() -> Self {
+        return Self {
+            value: Vec3d::default(),
+        };
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -56,6 +70,12 @@ impl TransformComponent {
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlayerComponent {}
 
+impl PlayerComponent {
+    pub fn new() -> Self {
+        return Self {};
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct FacingComponent {
     pub direction: Direction,
@@ -72,6 +92,12 @@ impl FacingComponent {
 #[derive(Clone, Debug, PartialEq)]
 pub struct EngineInputsComponent {
     pub inputs: Vec<EngineInputs>,
+}
+
+impl EngineInputsComponent {
+    pub fn new() -> Self {
+        return Self { inputs: vec![] };
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]

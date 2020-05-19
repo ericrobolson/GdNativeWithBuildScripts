@@ -20,10 +20,6 @@ impl Vec3d {
         );
     }
 
-    pub fn normalize(&self) -> Self {
-        unimplemented!();
-    }
-
     pub fn multiply(&self, number: FixedNumber) -> Self {
         return Self {
             x: self.x * number,

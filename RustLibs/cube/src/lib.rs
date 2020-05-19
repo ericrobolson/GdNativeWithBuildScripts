@@ -149,7 +149,7 @@ impl GameEngine {
             }
 
             //TODO: deletion of nodes
-
+            //TODO: what happens when an entity is deleted?
             // Create gdnode if it doesn't exist
             if gdnode.is_none() {
                 let mut gd_node = gdnative::Node2D::new();

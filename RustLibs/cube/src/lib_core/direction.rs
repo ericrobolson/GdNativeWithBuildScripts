@@ -12,13 +12,3 @@ pub enum Direction {
     West,
     NorthWest,
 }
-
-impl Direction {
-    pub fn to_normalized_vec3d(&self) -> Vec3d {
-        unimplemented!();
-    }
-
-    pub fn from_vec3d(vector: &Vec3d) -> Self {
-        unimplemented!();
-    }
-}
